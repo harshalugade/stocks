@@ -28,12 +28,14 @@
       try {
         let output = "";
         for (let symbol of stocks) {
-          let url = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://priceapi.moneycontrol.com/pricefeed/nse/equitycash/' + symbol)}`;
+          // Yahoo Finance API via AllOrigins
+          let url = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/' + symbol + '.NS')}`;
           let res = await fetch(url);
           let data = await res.json();
 
-          if (data && data.data && data.data.pricecurrent) {
-            output += `<div class='stock'>${symbol}: ${data.data.pricecurrent}</div>`;
+          if (data && data.chart && data.chart.result && data.chart.result[0].meta.regularMarketPrice) {
+            let price = data.chart.result[0].meta.regularMarketPrice;
+            output += `<div class='stock'>${symbol}: ${price}</div>`;
           } else {
             output += `<div class='stock'>${symbol}: error</div>`;
           }
@@ -49,4 +51,3 @@
   </script>
 </body>
 </html>
-
