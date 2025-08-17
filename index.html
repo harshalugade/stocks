@@ -22,22 +22,28 @@
   <div id="prices"></div>
 
   <script>
-    const stocks = ["RELIANCE.BO", "INFY.BO", "TCS.BO", "^BSESN"];
+    const stocks = ["RELIANCE", "INFY", "TCS"];
 
     async function fetchPrices() {
-      let output = "";
-      for (let s of stocks) {
-        try {
-          let url = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + s)}`;
-          let res = await fetch(url);
-          let data = await res.json();
-          let quote = data.quoteResponse.result[0];
-          output += `<div class='stock'>${s.replace(".BO", "").replace("^BSESN", "SENSEX")}: ${quote.regularMarketPrice}</div>`;
-        } catch (e) {
-          output += `<div class='stock'>${s}: error</div>`;
+      try {
+        // Use TradingView lightweight API through a proxy
+        let url = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://priceapi.moneycontrol.com/pricefeed/nse/equitycash/' + stocks.join(","))}`;
+        let res = await fetch(url);
+        let data = await res.json();
+        let output = "";
+
+        if (data && data.data) {
+          for (let s in data.data) {
+            output += `<div class='stock'>${s}: ${data.data[s].pricecurrent}</div>`;
+          }
+        } else {
+          output = "Error loading prices";
         }
+
+        document.getElementById("prices").innerHTML = output;
+      } catch (e) {
+        document.getElementById("prices").innerHTML = "Error fetching prices";
       }
-      document.getElementById("prices").innerHTML = output;
     }
 
     fetchPrices();
@@ -45,3 +51,4 @@
   </script>
 </body>
 </html>
+
