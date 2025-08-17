@@ -27,20 +27,22 @@
     async function fetchPrices() {
       try {
         let output = "";
-        for (let symbol of stocks) {
-          // Using alternative free API (Finnhub proxy via AllOrigins)
-          let url = `https://api.allorigins.win/get?url=${encodeURIComponent('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + symbol + '.NS')}`;
-          let res = await fetch(url);
-          let wrapped = await res.json();
-          let data = JSON.parse(wrapped.contents);
+        let url = `https://stock-market-india-wrapper.vercel.app/get_multiple_quote_info?companyNames=${stocks.join(",")}`;
+        let res = await fetch(url);
+        let data = await res.json();
 
-          if (data && data.quoteResponse && data.quoteResponse.result && data.quoteResponse.result.length > 0) {
-            let price = data.quoteResponse.result[0].regularMarketPrice;
-            output += `<div class='stock'>${symbol}: ${price}</div>`;
-          } else {
-            output += `<div class='stock'>${symbol}: error</div>`;
+        if (data && data.data) {
+          for (let symbol of stocks) {
+            if (data.data[symbol] && data.data[symbol].lastPrice) {
+              output += `<div class='stock'>${symbol}: ${data.data[symbol].lastPrice}</div>`;
+            } else {
+              output += `<div class='stock'>${symbol}: error</div>`;
+            }
           }
+        } else {
+          output = "Error loading prices";
         }
+
         document.getElementById("prices").innerHTML = output;
       } catch (e) {
         document.getElementById("prices").innerHTML = "Error fetching prices";
