@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Stock Prices</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #fff;
+      color: #000;
+      padding: 10px;
+      font-size: 18px;
+    }
+    .stock {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <h2>Live Stock Prices</h2>
+  <div id="prices"></div>
+
+  <script>
+    const stocks = ["RELIANCE.NS", "INFY.NS", "TCS.NS", "^NSEI"];
+
+    async function fetchPrices() {
+      let output = "";
+      for (let s of stocks) {
+        try {
+          let res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${s}`);
+          let data = await res.json();
+          let quote = data.quoteResponse.result[0];
+          output += `<div class='stock'>${s.replace(".NS", ""):} ${quote.regularMarketPrice}</div>`;
+        } catch (e) {
+          output += `<div class='stock'>${s}: error</div>`;
+        }
+      }
+      document.getElementById("prices").innerHTML = output;
+    }
+
+    fetchPrices();
+    setInterval(fetchPrices, 60000); // refresh every 60s
+  </script>
+</body>
+</html>
