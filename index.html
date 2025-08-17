@@ -28,10 +28,10 @@
       let output = "";
       for (let s of stocks) {
         try {
-          let res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${s}`);
+          let res = await fetch(`https://corsproxy.io/?https://query1.finance.yahoo.com/v7/finance/quote?symbols=${s}`);
           let data = await res.json();
           let quote = data.quoteResponse.result[0];
-          output += `<div class='stock'>${s.replace(".NS", ""):} ${quote.regularMarketPrice}</div>`;
+          output += `<div class='stock'>${s.replace(".NS", "").replace("^NSEI", "NIFTY50")}: ${quote.regularMarketPrice}</div>`;
         } catch (e) {
           output += `<div class='stock'>${s}: error</div>`;
         }
