@@ -22,22 +22,23 @@
   <div id="prices"></div>
 
   <script>
-    const stocks = ["RELIANCE.BO", "INFY.BO", "TCS.BO"];
+    const stocks = ["RELIANCE", "INFY", "TCS"];
 
     async function fetchPrices() {
       try {
         let output = "";
         for (let symbol of stocks) {
-          // Using Yahoo Finance chart API with .BO for BSE symbols
-          let url = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/' + symbol)}`;
+          // Using alternative free API (Finnhub proxy via AllOrigins)
+          let url = `https://api.allorigins.win/get?url=${encodeURIComponent('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + symbol + '.NS')}`;
           let res = await fetch(url);
-          let data = await res.json();
+          let wrapped = await res.json();
+          let data = JSON.parse(wrapped.contents);
 
-          if (data && data.chart && data.chart.result && data.chart.result[0].meta && data.chart.result[0].meta.regularMarketPrice) {
-            let price = data.chart.result[0].meta.regularMarketPrice;
-            output += `<div class='stock'>${symbol.replace('.BO','')}: ${price}</div>`;
+          if (data && data.quoteResponse && data.quoteResponse.result && data.quoteResponse.result.length > 0) {
+            let price = data.quoteResponse.result[0].regularMarketPrice;
+            output += `<div class='stock'>${symbol}: ${price}</div>`;
           } else {
-            output += `<div class='stock'>${symbol.replace('.BO','')}: error</div>`;
+            output += `<div class='stock'>${symbol}: error</div>`;
           }
         }
         document.getElementById("prices").innerHTML = output;
