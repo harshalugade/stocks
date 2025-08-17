@@ -22,12 +22,15 @@
   <div id="prices"></div>
 
   <script>
+    // Change this to your own deployed wrapper base URL once you host it (e.g. on Vercel/Render/Heroku)
+    const API_BASE = "https://harshalugade.github.io/stocks/"; 
+
     const stocks = ["RELIANCE", "INFY", "TCS"];
 
     async function fetchPrices() {
       try {
         let output = "";
-        let url = `https://stock-market-india-wrapper.vercel.app/get_multiple_quote_info?companyNames=${stocks.join(",")}`;
+        let url = `${API_BASE}/get_multiple_quote_info?companyNames=${stocks.join(",")}`;
         let res = await fetch(url);
         let data = await res.json();
 
@@ -54,3 +57,4 @@
   </script>
 </body>
 </html>
+
