@@ -26,20 +26,18 @@
 
     async function fetchPrices() {
       try {
-        // Use TradingView lightweight API through a proxy
-        let url = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://priceapi.moneycontrol.com/pricefeed/nse/equitycash/' + stocks.join(","))}`;
-        let res = await fetch(url);
-        let data = await res.json();
         let output = "";
+        for (let symbol of stocks) {
+          let url = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://priceapi.moneycontrol.com/pricefeed/nse/equitycash/' + symbol)}`;
+          let res = await fetch(url);
+          let data = await res.json();
 
-        if (data && data.data) {
-          for (let s in data.data) {
-            output += `<div class='stock'>${s}: ${data.data[s].pricecurrent}</div>`;
+          if (data && data.data && data.data.pricecurrent) {
+            output += `<div class='stock'>${symbol}: ${data.data.pricecurrent}</div>`;
+          } else {
+            output += `<div class='stock'>${symbol}: error</div>`;
           }
-        } else {
-          output = "Error loading prices";
         }
-
         document.getElementById("prices").innerHTML = output;
       } catch (e) {
         document.getElementById("prices").innerHTML = "Error fetching prices";
